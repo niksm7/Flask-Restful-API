@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
+import requests
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 import os
@@ -136,6 +137,11 @@ def delete_product(id):
 
     return product_schema.jsonify(product)
 
+
+@app.route('/')
+def home():
+    
+    return render_template("home.html")
 
 # Run the Server
 if __name__ == "__main__":
