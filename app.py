@@ -3,6 +3,7 @@ import requests
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 import os
+import secrets
 
 app = Flask(__name__)
 
@@ -38,6 +39,18 @@ class Product(db.Model):
         self.price = price
         self.qty = qty
 
+class API_Tokens(db.Model):
+    id = db.Column(db.Integer,primary_key = True)
+    name = db.Column(db.String(100))
+    email = db.Column(db.String(100))
+    api_token = db.Column(db.String(16))
+
+    def __init__(self,name,email,api_token):
+        self.name = name
+        self.email = email
+        self.api_token = api_token
+
+
 # Create product schema
 
 class ProductSchema(ma.Schema):
@@ -46,10 +59,16 @@ class ProductSchema(ma.Schema):
     class Meta:
         fields = ('id','name','description','price','qty')
 
+class APISchema(ma.Schema):
+
+    class Meta:
+        fields = ('id','name','email','api_token')
+
 ############## Initialize the schema ####################
 
 product_schema = ProductSchema() # This is for 1 product
 products_schema = ProductSchema(many=True) # This is for many products
+api_schema = APISchema(many=True)
 
 # To apply changes to database or to create a db.sqlite file we run the following commands: 
 #-----Here db is the variable we have made for SQLAlchemy----
@@ -140,8 +159,25 @@ def delete_product(id):
 
 @app.route('/')
 def home():
-    
     return render_template("home.html")
+
+@app.route("/generate_api",methods=["POST"])
+def generate_api():
+    name = request.form['name']
+    emailx = request.form['email']
+    check_exists = API_Tokens.query.filter_by(name=name,email = emailx).first()
+    if check_exists != [] and check_exists != None:
+        return "500"
+
+    token = secrets.token_hex(8)
+    x = API_Tokens(name,emailx,token)
+
+    db.session.add(x)
+
+    db.session.commit()
+
+    return jsonify({"api_token":token})
+
 
 # Run the Server
 if __name__ == "__main__":
