@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template,session
 import requests
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -6,7 +6,7 @@ import os
 import secrets
 
 app = Flask(__name__)
-
+app.secret_key = "d1aba190fe0b4542b3589f7d636fad42"
 # Locating our base directory
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -161,22 +161,39 @@ def delete_product(id):
 def home():
     return render_template("home.html")
 
-@app.route("/generate_api",methods=["POST"])
+@app.route('/events')
+def events():
+    if session.get("api_key"):
+        return render_template("events.html",api_key = session["api_key"])
+    return render_template("events.html",api_key = "")
+
+@app.route("/generate_api",methods=["POST","GET"])
 def generate_api():
-    name = request.form['name']
-    emailx = request.form['email']
-    check_exists = API_Tokens.query.filter_by(name=name,email = emailx).first()
-    if check_exists != [] and check_exists != None:
-        return "500"
+    if request.method == "POST":
+        name = request.form['name']
+        emailx = request.form['email']
 
-    token = secrets.token_hex(8)
-    x = API_Tokens(name,emailx,token)
+        check_exists = API_Tokens.query.filter_by(name=name,email = emailx).first()
 
-    db.session.add(x)
+        if check_exists != [] and check_exists != None:
+            session["api_key"] = check_exists.api_token
+            return jsonify({"status":"500","api_token":check_exists.api_token})
 
-    db.session.commit()
+        token = secrets.token_hex(8)
 
-    return jsonify({"api_token":token})
+        x = API_Tokens(name,emailx,token)
+
+        db.session.add(x)
+
+        db.session.commit()
+
+        session["api_key"] = token
+
+        return jsonify({"status":"200","api_token":token})
+    api_key_token = request.args.get("api_key")
+    quer = API_Tokens.query.filter_by(api_token=api_key_token).first()
+
+    return jsonify({"status":"OK"}) if quer else jsonify({"status":"NOT OK"})
 
 
 # Run the Server

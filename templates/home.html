@@ -41,7 +41,7 @@
       <div>
         <nav class="nav nav-masthead justify-content-center float-md-end">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
-          <a class="nav-link" href="#">Features</a>
+          <a class="nav-link" href="/events">Try API</a>
           <a class="nav-link" href="#">Contact</a>
         </nav>
       </div>
@@ -50,31 +50,35 @@
     <main class="px-3">
       <h1>FLASK + RESTful API</h1>
       <p class="lead">This is just a simple project developed with Flask aimed at learning the power of RESTful API</p>
-      <p class="lead">Generate you API key token to test the functionality</p>
+      <p class="lead">Generate you API key to test the functionality</p>
       <p class="lead">
         <button class="btn btn-lg btn-secondary fw-bold border-white bg-white" data-bs-toggle="modal"
-          data-bs-target="#exampleModal">Generate</button>
+          data-bs-target="#exampleModal">Generate API Key</button>
       </p>
       <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" style="color: black;text-align: left;">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Generate API token</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Generate API Key</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <form>
                 <div class="mb-3">
                   <label for="name" class="col-form-label">Name:</label>
-                  <input type="text" class="form-control" id="name">
+                  <input type="text" class="form-control" placeholder="Required" id="name" required>
                 </div>
                 <div class="mb-3">
                   <label for="email" class="col-form-label">Email:</label>
-                  <input type="email" class="form-control" id="email" />
+                  <input type="email" class="form-control" placeholder="Required" id="email" required />
                 </div>
                 <div class="mb-3" id="token_div" hidden="true">
                   <label for="token" class="col-form-label">API Token:</label>
-                  <input type="text" class="form-control" id="token" readonly/>
+                  <input type="text" class="form-control" id="token" readonly />
+                </div>
+                <div class="mb-3" id="token_div2" hidden="true">
+                  <label for="token" class="col-form-label">API Token Already Exists:</label>
+                  <input type="text" class="form-control" id="token2" readonly />
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -91,7 +95,7 @@
 
 
     <footer class="mt-auto text-white-50">
-      <p>Made with ❤️ by <a href="https://www.linkedin.com/in/nikhilmankani/" class="text-white">Nikhil Mankani</a></p>
+      <p>Made with ❤️ by <a href="https://www.linkedin.com/in/nikhilmankani/" target="_blank" class="text-white">Nikhil Mankani</a></p>
     </footer>
   </div>
 
@@ -124,27 +128,35 @@
   function generate_apitoken() {
     var name = document.getElementById("name").value
     var email = document.getElementById("email").value
-    $.ajax({
-      type: "POST",
-      url: "/generate_api",
-      data: {
-        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-        "name": name,
-        "email": email
-      },
-      encode: true,
-      dataType: 'json',
-      success: function (data) {
+    if (name != "" && email != "") {
+      $.ajax({
+        type: "POST",
+        url: "/generate_api",
+        data: {
+          'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+          "name": name,
+          "email": email
+        },
+        encode: true,
+        dataType: 'json',
+        success: function (data) {
           console.log(data)
-          if(data != "500"){
-          document.getElementById("token_div").hidden = false
-          document.getElementById("token").value = data.api_token
+          if (data.status != "500") {
+            document.getElementById("token_div").hidden = false
+            document.getElementById("token_div2").hidden = true
+            document.getElementById("token").value = data.api_token
           }
-          else{
+          else {
             document.getElementById("token_div").hidden = true
+            document.getElementById("token_div2").hidden = false
+            document.getElementById("token2").value = data.api_token
           }
-      }
-    });
+        }
+      });
+    }
+    else {
+      alert("Name and email are required")
+    }
   }
 
 </script>
