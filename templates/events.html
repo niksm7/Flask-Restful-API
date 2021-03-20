@@ -37,7 +37,7 @@
 <body class="d-flex h-100 text-center text-white bg-dark">
 
   <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-    <header class="mb-auto">
+    <header class="mb-auto" style="margin-bottom: 50px!important;">
       <div>
         <nav class="nav nav-masthead justify-content-center float-md-end">
           <a class="nav-link" href="/">Home</a>
@@ -53,8 +53,35 @@
         id="floatingInputInvalid" placeholder="Enter your API Key" value="{{api_key}}" oninput="check_api(this.value)">
       <label for="floatingInputInvalid" style="color:black;">Enter your API Key</label>
     </form>
+    <br>
+    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" oninput="update_request(this.value)" id="select_request">
+      <option selected value="GET1">GET single product</option>
+      <option selected value="GETM">GET all products</option>
+      <option value="POST">POST</option>
+      <option value="PUT">PUT</option>
+      <option value="DELETE">DELETE</option>
+    </select>
+    <br>
+    <input type="text" class="form-control" id="urlholder" value="http://127.0.0.1:5000/product" readonly>
 
+    <br><br>
 
+    <div class="mb-3 row" id="product_id_div" hidden="true">
+      <label for="product_id" class="col-sm-2 col-form-label">PRODUCT ID</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="product_id" oninput="update_id(this.value)">
+      </div>
+    </div>
+
+    <div class="mb-3" id="show_result_div" hidden="true">
+      <textarea class="form-control" id="show_result" rows="10"></textarea>
+    </div>
+
+    <p class="lead">
+      <button class="btn btn-lg btn-secondary fw-bold border-white bg-white" onclick="show_result()">HIT!</button>
+    </p>
+
+    <br><br>
 
     <footer class="mt-auto text-white-50">
       <p>Made with ❤️ by <a href="https://www.linkedin.com/in/nikhilmankani/" class="text-white">Nikhil Mankani</a></p>
@@ -100,6 +127,37 @@
       $("#floatingInputInvalid").addClass("is-invalid")
       $("#floatingInputInvalid").removeClass("is-valid")
     }
+  }
+
+  function update_request(request_type){
+    if(request_type == "GET1" || request_type == "DELETE" || request_type == "PUT"){
+      document.getElementById("product_id_div").hidden = false
+    }
+    else{
+      document.getElementById("product_id").value = ""
+      document.getElementById("product_id_div").hidden = true
+      document.getElementById("urlholder").value = "http://127.0.0.1:5000/product"
+    }
+  }
+
+  function update_id(id){
+    document.getElementById("urlholder").value = "http://127.0.0.1:5000/product/" + id
+  }
+
+  function show_result(){
+    document.getElementById("show_result_div").hidden = false
+    var type_of_request = $("#select_request").val()
+    if(type_of_request == "GET1" || type_of_request == "GETM"){
+      type_of_request = "GET"
+    }
+    $.ajax({
+      type : type_of_request,
+      url: $("#urlholder").val(),
+      success: function (data) {
+        console.log(data)
+        $("#show_result").val(JSON.stringify(data,null,2))
+      }
+    })
   }
 </script>
 

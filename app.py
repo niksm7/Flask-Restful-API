@@ -59,16 +59,12 @@ class ProductSchema(ma.Schema):
     class Meta:
         fields = ('id','name','description','price','qty')
 
-class APISchema(ma.Schema):
-
-    class Meta:
-        fields = ('id','name','email','api_token')
 
 ############## Initialize the schema ####################
 
 product_schema = ProductSchema() # This is for 1 product
 products_schema = ProductSchema(many=True) # This is for many products
-api_schema = APISchema(many=True)
+
 
 # To apply changes to database or to create a db.sqlite file we run the following commands: 
 #-----Here db is the variable we have made for SQLAlchemy----
