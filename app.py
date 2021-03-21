@@ -75,10 +75,16 @@ products_schema = ProductSchema(many=True) # This is for many products
 ################## Create a product #####################
 @app.route('/product',methods=["POST"])
 def add_product():
-    name = request.json["name"]
-    description = request.json["description"]
-    price = request.json["price"]
-    qty = request.json["qty"]
+    try:
+        name = request.json["name"]
+        description = request.json["description"]
+        price = request.json["price"]
+        qty = request.json["qty"]
+    except:
+        name = request.form["name"]
+        description = request.form["description"]
+        price = request.form["price"]
+        qty = request.form["qty"]
 
     new_product = Product(name,description,price,qty)
 
