@@ -54,7 +54,8 @@
       <label for="floatingInputInvalid" style="color:black;">Enter your API Key</label>
     </form>
     <br>
-    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" oninput="update_request(this.value)" id="select_request">
+    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example"
+      oninput="update_request(this.value)" id="select_request">
       <option selected value="GET1">GET single product</option>
       <option selected value="GETM">GET all products</option>
       <option value="POST">POST</option>
@@ -134,7 +135,7 @@
     console.log(api)
     if (api.length == 16) {
       $.ajax({
-        type : "GET",
+        type: "GET",
         url: "/generate_api",
         data: {
           "api_key": $("#floatingInputInvalid").val(),
@@ -153,8 +154,8 @@
     }
   }
 
-  function update_request(request_type){
-    if(request_type == "GET1" || request_type == "DELETE"){
+  function update_request(request_type) {
+    if (request_type == "GET1" || request_type == "DELETE") {
       document.getElementById("product_name_div").hidden = true
       document.getElementById("product_desc_div").hidden = true
       document.getElementById("product_price_div").hidden = true
@@ -162,19 +163,19 @@
       document.getElementById("product_id_div").hidden = false
       document.getElementById("urlholder").value = "http://127.0.0.1:5000/product/"
     }
-    else if(request_type == "POST" || request_type == "PUT"){
+    else if (request_type == "POST" || request_type == "PUT") {
       document.getElementById("product_id_div").hidden = true
       document.getElementById("product_name_div").hidden = false
       document.getElementById("product_desc_div").hidden = false
       document.getElementById("product_price_div").hidden = false
       document.getElementById("product_qty_div").hidden = false
       document.getElementById("urlholder").value = "http://127.0.0.1:5000/product/?name=&desc=&price=&qty="
-      if(request_type == "PUT"){
+      if (request_type == "PUT") {
         document.getElementById("product_id_div").hidden = false
         document.getElementById("urlholder").value = "http://127.0.0.1:5000/product//?name=&desc=&price=&qty="
-        }
+      }
     }
-    else{
+    else {
       document.getElementById("product_id").value = ""
       document.getElementById("product_id_div").hidden = true
       document.getElementById("product_name_div").hidden = true
@@ -185,42 +186,70 @@
     }
   }
 
-  function update_id(id){
+  function update_id(id) {
     var type_of_request = $("#select_request").val()
-    if(type_of_request == "PUT"){
+    if (type_of_request == "PUT") {
       document.getElementById("urlholder").value = `http://127.0.0.1:5000/product/${id}/?&name=&desc=&price=&qty=`
+
+      async function fetchAsync(url) {
+        let response = await fetch(url);
+        let data = await response.json();
+        document.getElementById("product_name").value = data["name"]
+        document.getElementById("product_desc").value = data["description"]
+        document.getElementById("product_price").value = data["price"]
+        document.getElementById("product_qty").value = data["qty"]
+      }
+      if (id != "") {
+        fetchAsync("http://127.0.0.1:5000/product/" + id)
+      } 
+      else{
+        document.getElementById("product_name").value = ""
+        document.getElementById("product_desc").value = ""
+        document.getElementById("product_price").value = ""
+        document.getElementById("product_qty").value = ""
+      }
     }
-    else{
+    else {
       document.getElementById("urlholder").value = "http://127.0.0.1:5000/product/" + id
     }
-    
+
   }
 
-  function show_result(){
+  function show_result() {
+
     document.getElementById("show_result_div").hidden = false
     var type_of_request = $("#select_request").val()
     var url_address = $("#urlholder").val()
     var params = {}
-    if(type_of_request == "POST"){
+    if (type_of_request == "POST" || type_of_request == "PUT") {
       url_address = "http://127.0.0.1:5000/product"
+      if( type_of_request == "PUT"){
+        url_address = "http://127.0.0.1:5000/product/" + $("#product_id").val()
+      }
       params["csrfmiddlewaretoken"] = $('input[name=csrfmiddlewaretoken]').val()
       params["name"] = $("#product_name").val()
       params["description"] = $("#product_desc").val()
       params["price"] = $("#product_price").val()
       params["qty"] = $("#product_qty").val()
     }
-    if(type_of_request == "GET1" || type_of_request == "GETM"){
+    if (type_of_request == "GET1" || type_of_request == "GETM") {
       type_of_request = "GET"
     }
     $.ajax({
-      type : type_of_request,
+      type: type_of_request,
       url: url_address,
-      data:params,
+      data: params,
       success: function (data) {
         console.log(data)
-        $("#show_result").val(JSON.stringify(data,null,2))
+        $("#show_result").val(JSON.stringify(data, null, 2))
       }
     })
+
+    document.getElementById("product_id").value = ""
+    document.getElementById("product_name").value = ""
+    document.getElementById("product_desc").value = ""
+    document.getElementById("product_price").value = ""
+    document.getElementById("product_qty").value = ""
   }
 </script>
 

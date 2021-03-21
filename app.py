@@ -128,10 +128,16 @@ def get_product(id):
 @app.route('/product/<id>',methods=["PUT"])
 def update_product(id):
     product = Product.query.get(id)
-    product.name = request.json["name"]
-    product.description = request.json["description"]
-    product.price = request.json["price"]
-    product.qty = request.json["qty"]
+    try:
+        product.name = request.json["name"]
+        product.description = request.json["description"]
+        product.price = request.json["price"]
+        product.qty = request.json["qty"]
+    except:
+        product.name = request.form["name"]
+        product.description = request.form["description"]
+        product.price = request.form["price"]
+        product.qty = request.form["qty"]
 
     # Save it to the databse
     db.session.commit()
