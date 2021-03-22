@@ -62,7 +62,7 @@
       <option value="DELETE">DELETE</option>
     </select>
     <br>
-    <input type="text" class="form-control" id="urlholder" value="http://127.0.0.1:5000/product/{{api_key}}" readonly>
+    <input type="text" class="form-control" id="urlholder" value="https://flaskapiui.pythonanywhere.com/product/{{api_key}}" readonly>
 
     <br><br>
 
@@ -179,7 +179,7 @@
       document.getElementById("product_price_div").hidden = true
       document.getElementById("product_qty_div").hidden = true
     }
-    document.getElementById("urlholder").value = "http://127.0.0.1:5000/product/{{api_key}}"
+    document.getElementById("urlholder").value = "https://flaskapiui.pythonanywhere.com/product/{{api_key}}"
   }
 
   function update_id(id) {
@@ -194,7 +194,7 @@
         document.getElementById("product_qty").value = data["qty"]
       }
       if (id != "") {
-        fetchAsync("http://127.0.0.1:5000/product/{{api_key}}/" + id)
+        fetchAsync("https://flaskapiui.pythonanywhere.com/product/{{api_key}}/" + id)
       }
       else {
         document.getElementById("product_name").value = ""
@@ -203,7 +203,7 @@
         document.getElementById("product_qty").value = ""
       }
     }
-    document.getElementById("urlholder").value = "http://127.0.0.1:5000/product/{{api_key}}/" + id
+    document.getElementById("urlholder").value = "https://flaskapiui.pythonanywhere.com/product/{{api_key}}/" + id
 
   }
 
@@ -218,9 +218,9 @@
       var url_address = $("#urlholder").val()
       var params = {}
       if (type_of_request == "POST" || type_of_request == "PUT") {
-        url_address = "http://127.0.0.1:5000/product/{{api_key}}"
+        url_address = "https://flaskapiui.pythonanywhere.com/product/{{api_key}}"
         if (type_of_request == "PUT") {
-          url_address = "http://127.0.0.1:5000/product/{{api_key}}/" + $("#product_id").val()
+          url_address = "https://flaskapiui.pythonanywhere.com/product/{{api_key}}/" + $("#product_id").val()
         }
         params["csrfmiddlewaretoken"] = $('input[name=csrfmiddlewaretoken]').val()
         params["name"] = $("#product_name").val()
