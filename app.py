@@ -73,8 +73,8 @@ products_schema = ProductSchema(many=True) # This is for many products
 
 
 ################## Create a product #####################
-@app.route('/product',methods=["POST"])
-def add_product():
+@app.route('/product/<api>',methods=["POST"])
+def add_product(api):
     try:
         name = request.json["name"]
         description = request.json["description"]
@@ -101,8 +101,8 @@ def add_product():
 
 
 ################# Get all the products ####################
-@app.route('/product',methods=["GET"])
-def get_products():
+@app.route('/product/<api>',methods=["GET"])
+def get_products(api):
     # To find all the products available
     all_products = Product.query.all()
     
@@ -115,8 +115,8 @@ def get_products():
 
 ################# Get a single product ####################
 
-@app.route('/product/<id>',methods=["GET"])
-def get_product(id):
+@app.route('/product/<api>/<id>',methods=["GET"])
+def get_product(api,id):
 
     # To find the product with given id
     product = Product.query.get(id)
@@ -125,8 +125,8 @@ def get_product(id):
 
 
 ################### Update a product #######################
-@app.route('/product/<id>',methods=["PUT"])
-def update_product(id):
+@app.route('/product/<api>/<id>',methods=["PUT"])
+def update_product(api,id):
     product = Product.query.get(id)
     try:
         product.name = request.json["name"]
@@ -150,8 +150,8 @@ def update_product(id):
 
 #################### Delete a Product ######################
 
-@app.route('/product/<id>',methods=["DELETE"])
-def delete_product(id):
+@app.route('/product/<api>/<id>',methods=["DELETE"])
+def delete_product(api,id):
 
     # To find the product with given id
     product = Product.query.get(id)
